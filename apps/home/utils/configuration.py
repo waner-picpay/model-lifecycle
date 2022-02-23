@@ -3,10 +3,10 @@ from typing import Any
 
 from boto3.session import Session
 
-from factories.session import Boto3SessionFactory
-from factories.logger import LoggerFactory
-from store.dynamodb import DynamoAdapter
-from store.interfaces import IDocumentAdapter
+from apps.home.factories.session import Boto3SessionFactory
+from apps.home.factories.logger import LoggerFactory
+from apps.home.store.dynamodb import DynamoAdapter
+from apps.home.store.interfaces import IDocumentAdapter
 
 logger = LoggerFactory.get_logger(__name__)
 

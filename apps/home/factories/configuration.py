@@ -1,7 +1,7 @@
 from boto3.session import Session
 
-from store.interfaces import IDocumentAdapter
-from utils.configuration import Configuration
+from apps.home.store.interfaces import IDocumentAdapter
+from apps.home.utils.configuration import Configuration
 
 
 class ConfigurationFactory:

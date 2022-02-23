@@ -4,7 +4,7 @@ import os
 
 from boto3.session import Session  # type: ignore
 
-from factories.logger import LoggerFactory
+from apps.home.factories.logger import LoggerFactory
 
 logger = LoggerFactory.get_logger(__name__)
 
@@ -41,11 +41,11 @@ class Boto3SessionFactory:
                 )
             else: 
                 session = Session(
-                    aws_access_key_id=aws_access_key_id,
-                    aws_secret_access_key=aws_secret_access_key,
-                    aws_session_token=aws_session_token,
-                    region_name=aws_default_region,
-                )
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
+                aws_session_token=aws_session_token,
+                region_name=aws_default_region,
+            )
             logger.info("Using {ENV} s3 session configuration.")
         else:
             message = "S3 session variables not encountered, use_local_session=true or set env vars: {AWS_ACCESS_KEY_ID} and {AWS_SECRET_ACCESS_KEY}!!"

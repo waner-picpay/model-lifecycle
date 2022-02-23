@@ -1,7 +1,10 @@
 import os
+from apps.home.factories.configuration import ConfigurationFactory
 
-from factories.session import Boto3SessionFactory
-from store.dynamodb import DynamoAdapter
+from apps.home.factories.session import Boto3SessionFactory
+from apps.home.store.dynamodb import DynamoAdapter
 
-s3_session = Boto3SessionFactory.get_or_create()
-db_adapter = DynamoAdapter(s3_session)
+environment = os.getenv("PICPAY_OWL_ENVIRONMENT", "prod")
+session = Boto3SessionFactory.get_or_create()
+db_adapter = DynamoAdapter(session)
+configuration = ConfigurationFactory.get_or_create(session=session, document_adapter=db_adapter, environment=environment)

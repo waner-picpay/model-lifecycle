@@ -4,9 +4,9 @@ from typing import Dict, List, Tuple
 from boto3.dynamodb.conditions import Key
 from boto3.session import Session  # type: ignore
 from botocore.exceptions import ClientError
-from store.interfaces import IDocumentAdapter
+from apps.home.store.interfaces import IDocumentAdapter
 
-from factories.logger import LoggerFactory
+from apps.home.factories.logger import LoggerFactory
 
 logger = LoggerFactory.get_logger(__name__)
 

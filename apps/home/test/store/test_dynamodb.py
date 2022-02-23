@@ -2,6 +2,8 @@ import os
 import pytest
 import re
 import json
+import sys 
+sys.path.append('../../')
 
 from boto3.session import Session
 from boto3.dynamodb.conditions import Key
