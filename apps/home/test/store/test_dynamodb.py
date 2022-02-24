@@ -3,18 +3,16 @@ import pytest
 import re
 import json
 import sys 
-sys.path.append('../../')
 
-from boto3.session import Session
-from boto3.dynamodb.conditions import Key
 from decimal import Decimal
-from botocore.exceptions import ClientError
-from factories.session import Boto3SessionFactory
-from factories.configuration import ConfigurationFactory
-
-from store.dynamodb import DynamoAdapter
 from copy import deepcopy
-from factories.logger import LoggerFactory
+
+from botocore.exceptions import ClientError
+from apps.home.factories.session import Boto3SessionFactory
+from apps.home.factories.configuration import ConfigurationFactory
+
+from apps.home.store.dynamodb import DynamoAdapter
+from apps.home.factories.logger import LoggerFactory
 
 logger = LoggerFactory.get_logger(__name__)
 

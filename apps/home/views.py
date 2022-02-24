@@ -10,6 +10,9 @@ from django.template import loader
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
 
+from apps.home.controllers.features import FeaturesController
+from apps.home.utils import serialization
+
 
 @login_required(login_url="/login/")
 def index(request):
@@ -46,11 +49,20 @@ def pages(request):
 
 @login_required(login_url="/login/")
 def features(request):
-    try: 
-        feature_collection = request.GET.get('feature_collection')
-        feature_name = request.GET.get('feature_name')
+    
+    feature_origin = request.GET.get('feature_origin', None)
+    feature_name = request.GET.get('feature_name', None)
+    offset = request.GET.get('offset', None)
 
-        context = {'segment':'Features', 'feature_name':feature_name, 'feature_collection':feature_collection}
+    context = {'segment':'Features', 'feature_name':feature_name, 'feature_origin':feature_origin}
+
+    try: 
+        controller = FeaturesController()
+       
+        if offset: 
+            offset = serialization.decode_dict(offset)
+        table = controller.get_features(name=feature_name, origin=feature_origin, offset=offset)
+        context['feature_table'] = table
 
         return render(request=request, template_name='home/features.html', context=context)
     except KeyError: 

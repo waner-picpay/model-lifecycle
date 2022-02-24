@@ -83,7 +83,10 @@ class DynamoAdapter(IDocumentAdapter):
 
     def query_custom(self, collection: str, query_dict: Dict) -> Tuple[List, Dict]:
         try:
-            response = self._database.Table(collection).query(**query_dict)
+            if 'KeyConditionExpression'  in query_dict:
+                response = self._database.Table(collection).query(**query_dict)
+            else: 
+                response = self._database.Table(collection).scan(**query_dict)
             data = response["Items"]
             return (
                 data,

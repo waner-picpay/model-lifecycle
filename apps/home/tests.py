@@ -41,7 +41,8 @@ class BaseControllerTests(TestCase):
                 "source": "",
                 "type": "int",
                 "desc": "particao: dia"
-                },{
+                },
+                {
                 "origin": "fg_client_unit_group_test",
                 "name": "day",
                 "updated_at": "1645631141",
