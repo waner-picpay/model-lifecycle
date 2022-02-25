@@ -99,3 +99,15 @@ class DynamoAdapter(IDocumentAdapter):
             DynamoAdapter.handle_error(error)
         except BaseException as error:
             logger.error(f"Unknown error while executing query: {error}")
+
+
+    def query_custom_full(self, collection: str, query_dict: Dict) -> List:
+        all_results = []
+        offset = "anything"
+
+        while offset:
+            result, offset = self.query_custom(collection=collection, query_dict=query_dict)
+            all_results.extend(result)
+        
+        return all_results
+

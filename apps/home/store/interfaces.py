@@ -37,3 +37,14 @@ class IDocumentAdapter(ABC):
         Returns:
             Tuple[List, Dict]: _description_
         """
+
+    def query_custom_full(self, collection: str, query_dict: Dict) -> List:
+            """_summary_
+
+            Args:
+                collection (str): _description_
+                query_dict (Dict): _description_
+
+            Returns:
+                List: _description_
+            """
