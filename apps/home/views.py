@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
+from apps.home.controllers.features import FeaturesController
 
 from apps.home.controllers.search import SearchController
 from apps.home.utils import serialization
@@ -63,6 +64,24 @@ def search(request, term):
         context['results_table'] = table
 
         return render(request=request, template_name='home/search.html', context=context)
+    except KeyError as error: 
+        logger.error(f'Key error home.views.search {error}')
+        html_template = loader.get_template('home/page-404.html')
+        return HttpResponse(html_template.render(context, request))
+
+@login_required(login_url="/login/")
+def feature(request, feature_origin, feature_name):
+    
+
+    context = {'segment':'Search', 'feature_origin':feature_origin, 'feature_name':feature_name}
+
+    try: 
+        controller = FeaturesController()
+       
+        feature = controller.get_feature(name=feature_name, origin=feature_origin)
+        context['feature'] = feature
+
+        return render(request=request, template_name='home/features.html', context=context)
     except KeyError as error: 
         logger.error(f'Key error home.views.search {error}')
         html_template = loader.get_template('home/page-404.html')
