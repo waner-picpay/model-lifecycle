@@ -1,0 +1,8 @@
+{
+    "python.testing.pytestArgs": [
+        "/Users/wanermiranda/projects/owl-dash2/markI/owl_mark_i/"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.cwd": "/Users/wanermiranda/projects/owl-dash2/markI/owl_mark_i/"
+}
