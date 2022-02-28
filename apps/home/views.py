@@ -80,7 +80,7 @@ def feature(request, feature_origin, feature_name):
        
         feature = controller.get_feature(name=feature_name, origin=feature_origin)
         context['feature'] = feature
-
+        context['profiling_url'] = controller.profiling_controller.get_url(feature_name=feature_name)
         return render(request=request, template_name='home/features.html', context=context)
     except KeyError as error: 
         logger.error(f'Key error home.views.search {error}')

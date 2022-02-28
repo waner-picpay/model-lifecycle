@@ -54,10 +54,11 @@ class BaseController(metaclass=SingletonMeta):
 
 
     def _generate_table(self) -> Type:
-        attrs = {field.name: tables.Column() for field in fields(self._data_klass)}
-        attrs['Meta'] = type('Meta', (), dict(attrs={"class":"paleblue", "orderable":"True", "width":"100%"}) )
-        klass = type('DynamicTable', (BaseTable,), attrs)
-        return klass
+        if self._data_klass:
+            attrs = {field.name: tables.Column() for field in fields(self._data_klass)}
+            attrs['Meta'] = type('Meta', (), dict(attrs={"class":"paleblue", "orderable":"True", "width":"100%"}) )
+            klass = type('DynamicTable', (BaseTable,), attrs)
+            return klass
 
     def _parse_column_types(self, data:Dict, artifact_type:str = 'Feature'):
         result = pd.DataFrame(data)
