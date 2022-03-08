@@ -8,17 +8,24 @@ from apps.home.store.interfaces import IDocumentAdapter
 from apps.home.utils.configuration import Configuration
 from django.utils.html import format_html
 
-class SearchLinkColumn(tables.Column):
+class SearchFeatureModelLinkColumn(tables.Column):
     def render(self, record):
         if record['artifact_type'] == 'Feature':
-            return format_html (f"<a href = \'/feature/{record['origin']}/{record['name']} \' target='blank'> {record['origin']}.{record['name']} </a>" )
+            return format_html (f"<a href = \'/feature/{record['origin']}/{record['name']} \' target='_blank'> {record['origin']}.{record['name']} </a>" )
         else: 
             return f"/models/{record['origin']}/{record['name']}"
 
+class SearchOriginModelLinkColumn(tables.Column):
+    def render(self, record):
+        if record['artifact_type'] == 'Feature':
+            return format_html (f"<a href = \'/feature_collection/{record['origin']} \' target='_blank'> {record['origin']} </a>" )
+        else: 
+            return f"/models/{record['origin']}"
+
 class SearchTable(tables.Table):
     artifact_type = tables.Column()
-    origin  = tables.Column()
-    name  = SearchLinkColumn() 
+    origin  = SearchOriginModelLinkColumn()
+    name  = SearchFeatureModelLinkColumn() 
     desc  = tables.Column()
     dag  = tables.Column() 
     source  = tables.Column() 
@@ -61,7 +68,7 @@ class SearchController(BaseController):
         self._table = SearchTable
 
 
-    def get_features(self, name=None, origin=None, offset=None): 
+    def search_objects(self, name=None, origin=None, offset=None): 
         all_results = []
 
         if name and origin: 

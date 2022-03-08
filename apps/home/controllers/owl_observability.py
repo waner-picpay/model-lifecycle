@@ -9,7 +9,7 @@ from apps.home.factories.logger import LoggerFactory
 from apps.home.store.interfaces import IDocumentAdapter
 from apps.home.utils.configuration import Configuration
 import requests
-
+from urllib.parse import quote_plus as urlencode
 logger = LoggerFactory.get_logger(__name__)
 class OWLProfilingContoller(BaseController):
 
@@ -51,6 +51,7 @@ class OWLProfilingContoller(BaseController):
                     validation_rules = self._json_data['metrics_validation'][s]
                 else: 
                     validation_rules = {}
+
                 for m, mvalue in stage['metrics_values'].items():
                     for f, fvalue in mvalue.items():
                         if f not in feature_metrics: 
@@ -60,7 +61,8 @@ class OWLProfilingContoller(BaseController):
                         if m in validation_rules and f in validation_rules[m]['columns']:
                             validation_rule = validation_rules[m]['validation_rule']
                             is_valid = validation_rules[m]['columns'][f]
-                        
+                        if type(fvalue) == float:
+                            fvalue = f'{fvalue:.2f}'
                         feature_metrics[f].append(Metric(m, fvalue, validation_rule, is_valid))
         self._feature_metrics = feature_metrics
 
@@ -94,9 +96,9 @@ class OWLProfilingContoller(BaseController):
 
 
     def get_url(self, feature_name): 
-        url = f"http://owl.dash.ms.prod/projects?project={self._project_name}&experiment={self._experiment_name}&run={self._run_id}&stage={self._stage_name}&feature={feature_name}&tab=Initial"       
+        url = f"http://owl.dash.ms.prod/projects?project={urlencode(self._project_name)}&experiment={urlencode(self._experiment_name)}&run={urlencode(self._run_id)}&stage={urlencode(self._stage_name)}&feature={urlencode(feature_name)}&tab=Initial"       
         return url
-        
+
     @property
     def feature_metrics (self) -> Dict[str,List[Metric]]:
         return self._feature_metrics

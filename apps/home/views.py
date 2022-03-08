@@ -13,7 +13,6 @@ from django.shortcuts import get_object_or_404, render
 from apps.home.controllers.features import FeaturesController
 
 from apps.home.controllers.search import SearchController
-from apps.home.utils import serialization
 
 
 @login_required(login_url="/login/")
@@ -60,7 +59,7 @@ def search(request, term):
     try: 
         controller = SearchController()
        
-        table = controller.get_features(name=feature_name, origin=feature_origin, offset=None)
+        table = controller.search_objects(name=feature_name, origin=feature_origin, offset=None)
         context['results_table'] = table
 
         return render(request=request, template_name='home/search.html', context=context)
@@ -73,15 +72,35 @@ def search(request, term):
 def feature(request, feature_origin, feature_name):
     
 
-    context = {'segment':'Search', 'feature_origin':feature_origin, 'feature_name':feature_name}
+    context = {'segment':'Feature', 'feature_origin':feature_origin, 'feature_name':feature_name}
 
     try: 
         controller = FeaturesController()
        
         feature = controller.get_feature(name=feature_name, origin=feature_origin)
         context['feature'] = feature
+        context['feature_collection'] = controller.feature_collection
         context['profiling_url'] = controller.profiling_controller.get_url(feature_name=feature_name)
         return render(request=request, template_name='home/features.html', context=context)
+    except KeyError as error: 
+        logger.error(f'Key error home.views.search {error}')
+        html_template = loader.get_template('home/page-404.html')
+        return HttpResponse(html_template.render(context, request))
+
+@login_required(login_url="/login/")
+def feature_collection(request, feature_origin):
+    
+    context = {'segment':'Feature Collection', 'feature_origin':feature_origin}
+
+    try: 
+        controller = FeaturesController()
+       
+        feature_collection = controller.get_feature_collection(name=feature_origin)
+        context['feature_collection'] = feature_collection
+        context['profiling_url'] = controller.profiling_controller.get_url(feature_name='count')
+        context['features_table'] = controller.build_features_table()
+        return render(request=request, template_name='home/feature_collection.html', context=context)
+
     except KeyError as error: 
         logger.error(f'Key error home.views.search {error}')
         html_template = loader.get_template('home/page-404.html')

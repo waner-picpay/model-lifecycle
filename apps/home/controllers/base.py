@@ -74,8 +74,16 @@ class BaseController(metaclass=SingletonMeta):
         return self._table(records)
 
 
-    def parse_object(self, data:List):
+    def parse_base_object(self, data:List, data_klass:Type= None):
         result = None
-        if data and len(data) > 0: 
-            result = self._data_klass(**data[0])
+        if not data_klass: 
+            data_klass = self._data_klass
+        if data and len(data) == 1: 
+            row = data[0]
+            dk_f = data_klass.__dataclass_fields__.keys()
+            dt_f = row.keys()
+            missing_fields = set(dk_f) - set(dt_f)
+            for f in missing_fields: 
+                row[f] = None
+            result = data_klass(**row)
         return result
