@@ -1,9 +1,8 @@
 from copy import deepcopy
 import re
 from typing import Dict, List
-from pytest import Session
+from boto3 import Session
 from apps.home.controllers.base import BaseController
-from apps.home.entities.features import Feature
 from apps.home.entities.metric import Metric
 from apps.home.factories.logger import LoggerFactory
 from apps.home.store.interfaces import IDocumentAdapter

@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
 
-from black import Any
-
 @dataclass
 class Metric: 
     name: str

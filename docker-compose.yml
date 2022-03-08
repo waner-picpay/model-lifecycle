@@ -6,7 +6,7 @@ services:
     env_file: .env
     build: .
     volumes:
-      - owl-app-dir:/opt/app
+      - owl-local-data:/opt/app/
     networks:
       - db_network
       - web_network
@@ -29,9 +29,10 @@ networks:
     driver: bridge
 
 volumes:
-  owl-app-dir:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./
+  owl-local-data:
+      driver: local
+      
+      driver_opts:
+        o: bind
+        type: none
+        device: ./

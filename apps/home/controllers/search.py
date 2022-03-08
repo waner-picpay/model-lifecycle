@@ -1,7 +1,7 @@
 
 from copy import deepcopy
 import django_tables2 as tables
-from pytest import Session
+from boto3 import Session
 from apps.home.controllers.base import BaseController
 from apps.home.entities.search import SearchTerm
 from apps.home.store.interfaces import IDocumentAdapter

@@ -1,7 +1,6 @@
 
 from copy import deepcopy
-from typing import Dict, List
-from pytest import Session
+from boto3 import Session
 from apps.home.controllers.base import BaseController
 from apps.home.controllers.owl_observability import OWLProfilingContoller
 from apps.home.entities.features import Feature, FeatureCollection
