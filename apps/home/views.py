@@ -4,21 +4,29 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from asyncio.log import logger
+import calendar
+from datetime import datetime
 from django import template
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
+from apps.home.controllers.costs import CostsExplorer
 from apps.home.controllers.features import FeaturesController
 
 from apps.home.controllers.search import SearchController
 
 
-@login_required(login_url="/login/")
 def index(request):
     context = {'segment': 'index'}
-
+    ce = CostsExplorer()
+    current_date = datetime.now()
+    first_day, last_day = calendar.monthrange(current_date.year, current_date.month)
+    start_date = f'{current_date.year}-{current_date.month:02d}-{first_day:02d}'
+    end_date = f'{current_date.year}-{current_date.month:02d}-{last_day:02d}'
+    ce.get_costs_usage_process(start_date, end_date)
+    context['processes_costs_table'] = ce.build_processes_table()
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
 
@@ -48,7 +56,6 @@ def pages(request):
         html_template = loader.get_template('home/page-500.html')
         return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/login/")
 def search(request, term):
     
     feature_origin = term
@@ -68,7 +75,6 @@ def search(request, term):
         html_template = loader.get_template('home/page-404.html')
         return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/login/")
 def feature(request, feature_origin, feature_name):
     
 
@@ -87,7 +93,6 @@ def feature(request, feature_origin, feature_name):
         html_template = loader.get_template('home/page-404.html')
         return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/login/")
 def feature_collection(request, feature_origin):
     
     context = {'segment':'Feature Collection', 'feature_origin':feature_origin}

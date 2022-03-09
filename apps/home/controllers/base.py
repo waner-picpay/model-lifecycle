@@ -60,25 +60,32 @@ class BaseController(metaclass=SingletonMeta):
             klass = type('DynamicTable', (BaseTable,), attrs)
             return klass
 
-    def _parse_column_types(self, data:Dict, artifact_type:str = 'Feature'):
+    def _parse_column_types(self, data:Dict, artifact_type:str = 'Feature' ):
         result = pd.DataFrame(data)
         for col in result.columns:
             if '_at' in col: 
                 result[col] = pd.to_datetime(result[col],unit='s')
         if self._use_artifact_type: 
-            result['artifact_type'] = artifact_type
+            if not artifact_type:
+                result['artifact_type'] = self._data_klass.__name__
+            else:
+                result['artifact_type'] = artifact_type
         return result
 
     def render_table(self, data:Dict) -> Any: 
         records = self._parse_column_types(data).to_dict('records')
         return self._table(records)
 
+    def parse_results(self, data:List):
+        self._data = self._parse_column_types(data)
 
-    def parse_base_object(self, data:List, data_klass:Type= None):
+        return self._data
+
+    def parse_base_object(self, data:Dict, data_klass:Type= None):
         result = None
         if not data_klass: 
             data_klass = self._data_klass
-        if data and len(data) == 1: 
+        if data: 
             row = data[0]
             dk_f = data_klass.__dataclass_fields__.keys()
             dt_f = row.keys()
