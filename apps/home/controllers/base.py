@@ -1,5 +1,6 @@
 from abc import ABC
 from ast import Dict
+import re
 from typing import List, Type, Any
 from xmlrpc.client import Boolean
 
@@ -61,14 +62,17 @@ class BaseController(metaclass=SingletonMeta):
             return klass
 
     def _parse_column_types(self, data:Dict, artifact_type:str = 'Feature' ):
+        def date_convertion(value):
+            if re.match(r'\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])', value):
+                    value = pd.to_datetime(value)
+            else:
+                value = pd.to_datetime(value,unit='s')
+            return value
         result = pd.DataFrame(data)
         for col in result.columns:
             if '_at' in col: 
-                if not "-" in result[col]:
-                    try:
-                        result[col] = pd.to_datetime(result[col],unit='s')
-                    except: 
-                        result[col] = pd.to_datetime(result[col])
+                result[col] = result[col].apply(date_convertion)
+                
                     
         return result
 
