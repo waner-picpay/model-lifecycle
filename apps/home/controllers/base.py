@@ -64,12 +64,12 @@ class BaseController(metaclass=SingletonMeta):
         result = pd.DataFrame(data)
         for col in result.columns:
             if '_at' in col: 
-                result[col] = pd.to_datetime(result[col],unit='s')
-        if self._use_artifact_type: 
-            if not artifact_type:
-                result['artifact_type'] = self._data_klass.__name__
-            else:
-                result['artifact_type'] = artifact_type
+                if not "-" in result[col]:
+                    try:
+                        result[col] = pd.to_datetime(result[col],unit='s')
+                    except: 
+                        result[col] = pd.to_datetime(result[col])
+                    
         return result
 
     def render_table(self, data:Dict) -> Any: 

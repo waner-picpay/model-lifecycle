@@ -87,8 +87,8 @@ class FeaturesController(BaseController):
         return feature_collection
 
     def get_feature(self, name, origin): 
-        if not self._feature_collection: 
-            self.get_feature_collection(name=origin)
+        # if not self._feature_collection: 
+        self.get_feature_collection(name=origin)
         feature = None
         query_dict = deepcopy(self.QUERY_FEATURE_BY_ORIGIN_NAME)
         query_dict["ExpressionAttributeValues"][":name"] = name
