@@ -52,7 +52,7 @@ class DynamoAdapter(IDocumentAdapter):
 
         return item
 
-    def scan(self, collection, offset: None, limit=20) -> Tuple[List, Dict]:
+    def scan(self, collection, offset = None, limit = 20) -> Tuple[List, Dict]:
 
         table = self._database.Table(collection)
         if offset is None:
@@ -101,12 +101,18 @@ class DynamoAdapter(IDocumentAdapter):
             logger.error(f"Unknown error while executing query: {error}")
 
 
-    def query_custom_full(self, collection: str, query_dict: Dict) -> List:
+    def query_custom_full(self, collection: str, query_dict: Dict=None) -> List:
         all_results = []
         offset = "anything"
 
         while offset:
-            result, offset = self.query_custom(collection=collection, query_dict=query_dict)
+            if offset == "anything": 
+                offset = None
+            if query_dict:
+                result, offset = self.query_custom(collection=collection, query_dict=query_dict)
+            else: 
+                result, offset = self.scan(collection, offset=offset)
+
             all_results.extend(result)
         
         return all_results

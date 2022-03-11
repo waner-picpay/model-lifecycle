@@ -26,7 +26,7 @@ class BaseTable(tables.Table):
 
 
 
-class BaseController(metaclass=SingletonMeta):
+class BaseController():
     _session :Session
     _configuration :Configuration
     _document_adapter :IDocumentAdapter
@@ -52,7 +52,7 @@ class BaseController(metaclass=SingletonMeta):
         self._data_klass = data_klass
         self._use_artifact_type = False
         self._table = self._generate_table()
-
+        self._data = None
 
     def _generate_table(self) -> Type:
         if self._data_klass:
@@ -63,10 +63,11 @@ class BaseController(metaclass=SingletonMeta):
 
     def _parse_column_types(self, data:Dict, artifact_type:str = 'Feature' ):
         def date_convertion(value):
-            if re.match(r'\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])', value):
-                    value = pd.to_datetime(value)
-            else:
-                value = pd.to_datetime(value,unit='s')
+            if value:
+                if re.match(r'\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])', value):
+                        value = pd.to_datetime(value)
+                else:
+                    value = pd.to_datetime(value,unit='s')
             return value
         result = pd.DataFrame(data)
         for col in result.columns:
@@ -76,8 +77,13 @@ class BaseController(metaclass=SingletonMeta):
                     
         return result
 
-    def render_table(self, data:Dict) -> Any: 
-        records = self._parse_column_types(data).to_dict('records')
+    def render_table(self, data:Dict = None) -> Any: 
+        records = []
+        if data is not None:
+            self._data = self._parse_column_types(data)
+        elif self._data is None: 
+            return self._table([])
+        records = self._data[list(self._table.base_columns.keys())].drop_duplicates().to_dict('records')
         return self._table(records)
 
     def parse_results(self, data:List):
@@ -87,14 +93,19 @@ class BaseController(metaclass=SingletonMeta):
 
     def parse_base_object(self, data:Dict, data_klass:Type= None):
         result = None
+        if type(data) == list: 
+            data = data[0]
         if not data_klass: 
             data_klass = self._data_klass
         if data: 
-            row = data[0]
+            row = data
             dk_f = data_klass.__dataclass_fields__.keys()
             dt_f = row.keys()
-            missing_fields = set(dk_f) - set(dt_f)
-            for f in missing_fields: 
+            missing_fields_klass = set(dk_f) - set(dt_f)
+            missing_fields_dict = set(dt_f) - set(dk_f)
+            for f in missing_fields_klass: 
                 row[f] = None
+            for k in missing_fields_dict:
+                del row[k]
             result = data_klass(**row)
         return result

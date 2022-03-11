@@ -79,5 +79,52 @@ class CostsExplorer(BaseController):
         self.parse_results(results)           
         return response
 
-    def build_processes_table(self):
+    def get_costs_usage_project(self, start_date:str, end_date:str, project_name:str):
+        tag_type = 'Project'
+        response = self._get_aws_costs_usage(start_date, end_date, tag_type)
+        result = {}
+        self._total_costs_period = 0.0
+        if len(response['ResultsByTime']) > 0:
+            start_date = response['ResultsByTime'][0]['TimePeriod']['Start']
+            end_date = response['ResultsByTime'][0]['TimePeriod']['End']
+            for group in response['ResultsByTime'][0]['Groups']:
+                group_key = group['Keys'][0]
+                if group_key  == f'Project${project_name}':
+                    cost_dict = group['Metrics']['BlendedCost']
+                    amount = float(int(float(cost_dict['Amount']) * 1000) / 1000.00)    
+                    result = {
+                        'tag':group_key, 
+                        'amount':f'{amount:.2f}', 
+                        'unit':cost_dict['Unit'], 
+                        'start_date': start_date, 
+                        'end_date':end_date}
+                    self._total_costs_period += float(amount)
+
+    def get_costs_usage_projects(self, start_date:str, end_date:str):
+        tag_type = 'Project'
+        response = self._get_aws_costs_usage(start_date, end_date, tag_type)
+        result = {}
+        results = []
+        self._total_costs_period = 0.0
+        if len(response['ResultsByTime']) > 0:
+            start_date = response['ResultsByTime'][0]['TimePeriod']['Start']
+            end_date = response['ResultsByTime'][0]['TimePeriod']['End']
+            for group in response['ResultsByTime'][0]['Groups']:
+                group_key = group['Keys'][0]
+                # if group_key  == f'Project${project_name}':
+                cost_dict = group['Metrics']['BlendedCost']
+                amount = float(int(float(cost_dict['Amount']) * 1000) / 1000.00)    
+                result = {
+                    'tag':group_key, 
+                    'amount':f'{amount:.2f}', 
+                    'unit':cost_dict['Unit'], 
+                    'start_date': start_date, 
+                    'end_date':end_date}
+                self._total_costs_period += float(amount)
+                results.append(result)
+
+        self.parse_results(results)           
+        return response
+
+    def build_table(self):
         return self.render_table(self._data)

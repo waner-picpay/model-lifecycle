@@ -43,8 +43,8 @@
                                         Running in Models 
                                     </p>
                                     <h5 class="font-weight-bolder mb-0">
-                                        3
-                                        <span class="text-success text-sm font-weight-bolder">+50%</span>
+                                        TBD
+                                        {% comment %} <span class="text-success text-sm font-weight-bolder">+50%</span> {% endcomment %}
                                     </h5>
                                 </div>
                             </div>
@@ -91,19 +91,20 @@
                                 <p class="text-sm mb-0 text-capitalize font-weight-bold">
                                     Dag Status
                                 </p>
-                                <h5 class="font-weight-bolder text-danger  mb-0">
+                                {% comment %} <h5 class="font-weight-bolder text-danger  mb-0">
                                     Failed
-                                </h5>
+                                </h5> {% endcomment %}
                             </div>
                         </div>
                         <div class="col-4 text-end">
                             <a 
-                                href="https://df1a78ea-455c-4398-b788-a72ce0516530-vpce.c14.us-east-1.airflow.amazonaws.com/graph?dag_id=fired_incentive_requests"
-                                target="_blank">
-                            <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
-                                <i class="ni ni-bulb-61 text-lg opacity-10" aria-hidden="true"></i>
-                            </div>
-                            </a>
+                                href="https://df1a78ea-455c-4398-b788-a72ce0516530-vpce.c14.us-east-1.airflow.amazonaws.com/graph?dag_id={{feature_collection.name}}"
+                                target="_blank" target="_blank">
+                                <div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+                                    <div class="icon icon-shape shadow text-center border-radius-md">
+                                        <img class="w-100 position-relative z-index-2 " src="/static/assets/img/logos/airflow.png" alt="airflow"/>
+                                      </div>                                </div>
+                                </a>
                         </div>
                     </div>
                 </div>

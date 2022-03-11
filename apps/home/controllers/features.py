@@ -114,6 +114,12 @@ class FeaturesController(BaseController):
             fvalue['metrics'] = []
             if 'origin' not in fvalue: 
                 fvalue['origin'] = self._feature_collection.name
+            if not 'created_at' in fvalue: 
+                fvalue['created_at'] = None
+            
+            if not 'updated_at' in fvalue: 
+                fvalue['updated_at'] = None
+            
             results.append(fvalue)
         return self.render_table(results)
 

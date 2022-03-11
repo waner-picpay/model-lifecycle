@@ -20,7 +20,7 @@ class SearchOriginModelLinkColumn(tables.Column):
         if record['artifact_type'] == 'Feature':
             return format_html (f"<a href = \'/feature_collection/{record['origin']} \' target='_blank'> {record['origin']} </a>" )
         else: 
-            return format_html (f"<a href = \'/search/{record['origin']} \' target='_blank'> {record['origin']}.{record['name']} </a>" )
+            return format_html (f"<a href = \'/search/{record['origin']} \' target='_blank'> {record['origin']} </a>" )
 
 class SearchTable(tables.Table):
     artifact_type = tables.Column()
@@ -130,14 +130,18 @@ class SearchController(BaseController):
     def extend_results(self, all_results, results, artifact_type):
         if results:
             for r in results:
-                r['artifact_type'] = artifact_type
+                if 'process_type' in results:
+                    process_type = f"{artifact_type}.{r['process_type']}" 
+                else: 
+                    process_type = artifact_type 
+                r['artifact_type'] = process_type
                 if artifact_type == 'Model':
                     r['origin']  = r['project_name']
                     r['name']  =  r['dag_name']
-                    r['desc']  = r['last_release']
+                    r['desc']  = r['last_release_ver']
                     r['dag']  = r['dag_name']
                     r['source']  = r['repo_url']
-                    r['updated_at']  = r['last_release'][1]
+                    r['updated_at']  = r['last_release_date']
 
             all_results.extend(results)
         self._raw_data = all_results

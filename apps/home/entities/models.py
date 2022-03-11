@@ -6,13 +6,16 @@ from decimal import Decimal
 class Model:
     project_name : str
     dag_name : str
+    process_type:str
     schedule : str
     catchup : bool
     owner : str
     tasks : dict
     created_at : str
+    start_date: str
     contributors : list
-    last_release : tuple
+    last_release_ver:str
+    last_release_date: str
     language : str
     repo_url : str
     dependencies: list

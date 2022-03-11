@@ -33,18 +33,41 @@ def index(request):
 
     start_date, end_date = get_dates(last_period_year, last_period_month)
     ce.get_costs_usage_process(start_date, end_date)
-    context['processes_last_costs_table'] = ce.build_processes_table()
+    context['processes_last_costs_table'] = ce.build_table()
     context['last_costs'] = f'$ {ce.total_costs_period:0.2f}'
     last_costs = ce.total_costs_period
 
+    ce.get_costs_usage_projects(start_date, end_date)
+    context['projects_last_costs_table'] = ce.build_table()
+
+
     start_date, end_date = get_dates(current_year, current_month)
     ce.get_costs_usage_process(start_date, end_date)
-    context['processes_costs_table'] = ce.build_processes_table()
+    context['processes_costs_table'] = ce.build_table()
     context['current_costs'] = f'$ {ce.total_costs_period:0.2f}'
-    costs_delta = (ce.total_costs_period / last_costs)*100
+    if last_costs > 0: 
+        costs_delta = (ce.total_costs_period / last_costs)*100
+    else: 
+        costs_delta = 100
+    
     costs_delta_positive = costs_delta < 100.0
+
     context['costs_delta'] =  f'{costs_delta:0.2f} %'
     context['costs_delta_positive'] = costs_delta_positive
+    ce.get_costs_usage_projects(start_date, end_date)
+    context['projects_costs_table'] = ce.build_table()
+
+    controller = ModelsController(monitoring=False)
+    controller.get_models()
+    context['projects_table'] = controller.render_table()
+
+
+    context['total_projects'] = controller.summary('project_name')
+    context['total_projects_last'] = controller.summary('project_name', start_date=start_date, end_date=end_date)
+
+    context['total_models'] = controller.summary('project_name', process_type='predict')
+    context['total_models_last'] = controller.summary('project_name', process_type='predict', start_date=start_date, end_date=end_date)
+    
     html_template = loader.get_template('home/index.html')
     return HttpResponse(html_template.render(context, request))
 
@@ -140,9 +163,41 @@ def model(request, project_name, dag_name):
     context = {'segment':'Model', 'project_name':project_name, 'model_name':dag_name}
 
     try: 
-        controller = ModelsController()
+        controller = ModelsController(monitoring=True)
        
         model = controller.get_model(dag_name=dag_name, project_name=project_name)
+
+        ce = CostsExplorer()
+        current_date = datetime.now()
+        current_year = current_date.year
+        current_month = current_date.month
+
+        first_day = current_date.replace(day=1)
+        last_period_date = first_day - timedelta(days=1)
+        last_period_month = last_period_date.month
+        last_period_year = last_period_date.year
+
+        start_date, end_date = get_dates(last_period_year, last_period_month)
+        ce.get_costs_usage_project(start_date, end_date, project_name)
+
+        context['last_costs'] = f'$ {ce.total_costs_period:0.2f}'
+        last_costs = ce.total_costs_period
+        start_date, end_date = get_dates(current_year, current_month)
+        ce.get_costs_usage_project(start_date, end_date, project_name)
+
+        context['current_costs'] = f'$ {ce.total_costs_period:0.2f}'
+        if last_costs > 0: 
+            costs_delta = (ce.total_costs_period / last_costs)*100
+        else: 
+            costs_delta = 100
+            
+        costs_delta_positive = costs_delta < 100.0            
+
+        context['costs_delta'] =  f'{costs_delta:0.2f} %'
+        context['costs_delta_positive'] = costs_delta_positive
+        
+
+
         context['model'] = model
         context['profiling_url'] = controller.profiling_controller.get_url(feature_name=dag_name)
         return render(request=request, template_name='home/models.html', context=context)
